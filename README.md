@@ -3,5 +3,5 @@
 - Tegar Levta Anggana (https://github.com/tegar-anggana/skripsi-deployment)
 
 # Command
-- `docker-compose up --build`
+- `docker-compose up --build -d`
 - `docker-compose down`

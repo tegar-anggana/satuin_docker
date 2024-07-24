@@ -1,15 +1,13 @@
-# Use the ffmpeg image as the base image
-FROM jrottenberg/ffmpeg:4.4-alpine AS ffmpeg
-
-# Use a Python image to build the application
+# FROM python:3.11-alpine
 FROM python:3.10
 
 # Set up environment variables for Python
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-# Install ffmpeg from the ffmpeg image
-COPY --from=ffmpeg / /
+# Install ffmpeg and other dependencies
+RUN apt-get update && \
+    apt-get install -y ffmpeg
 
 # Create and set the working directory
 WORKDIR /app
@@ -24,7 +22,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Expose the port your application will run on
-EXPOSE 8080
+EXPOSE 8881
 
 # Specify the command to run on container start
 CMD ["python", "app.py"]

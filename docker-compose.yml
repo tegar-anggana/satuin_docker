@@ -6,11 +6,11 @@ services:
       context: ./a-backend-main
     container_name: a-backend-container
     ports:
-      - "8080:8080"
+      - "8881:5000"
 
   skripsi-deployment:
     build:
       context: ./skripsi-deployment-main
     container_name: skripsi-deployment-container
     ports:
-      - "8081:8081"
+      - "8882:5000"
