@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ulasan Aplikasi Mobile JKN</title>
+    <style>
+      body,
+      button {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        text-align: center;
+        margin-top: 50px;
+      }
+      #result {
+        margin-top: 20px;
+      }
+      .upload-box {
+        border: 1px solid black;
+        width: fit-content;
+        margin: 10px auto;
+        padding: 10px;
+        border-radius: 5px;
+      }
+      .upload-container {
+        margin-top: 40px;
+      }
+      .button-submit-upload {
+        font-size: 16px;
+        padding: 4px 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Analisis Sentimen Ulasan Aplikasi Mobile JKN</h1>
+    <!-- <div>
+      <form id="sentiment-form">
+        <textarea
+          id="text"
+          name="text"
+          rows="4"
+          cols="50"
+          placeholder="Masukkan teks ulasan..."
+        ></textarea
+        ><br />
+        <button type="submit">Analisis Sentimen</button>
+      </form>
+      <div id="result"></div>
+    </div> -->
+    <div class="upload-container">
+      <h2>Unggah File Excel (.xlsx)</h2>
+      <form id="predictFile">
+        <!-- <form
+        id="predictFile"
+        action="/predict-file"
+        method="post"
+        enctype="multipart/form-data"
+      > -->
+        <div class="upload-box">
+          <label for="file">Unggah:</label>
+          <input type="file" id="file" name="file" accept=".xlsx" required />
+        </div>
+        <div>
+          <button class="button-submit-upload" type="submit">Upload</button>
+        </div>
+      </form>
+    </div>
+
+    <div id="response"></div>
+
+    <script>
+      // HANDLE TEXT INPUT
+      // document
+      //   .getElementById("sentiment-form")
+      //   .addEventListener("submit", function (e) {
+      //     e.preventDefault();
+      //     const text = document.getElementById("text").value;
+      //     fetch("/predict", {
+      //       method: "POST",
+      //       headers: {
+      //         "Content-Type": "application/x-www-form-urlencoded",
+      //       },
+      //       body: "text=" + encodeURIComponent(text),
+      //     })
+      //       .then((response) => response.json())
+      //       .then((data) => {
+      //         const resultDiv = document.getElementById("result");
+      //         resultDiv.innerHTML = "Sentiment: " + data[0].label;
+      //         // + "<br>Score: " +
+      //         // data[0].score.toFixed(4);
+      //       });
+      //   });
+
+      // HANDLE XLSX UPLOAD
+      document
+        .getElementById("predictFile")
+        .addEventListener("submit", function (event) {
+          event.preventDefault(); // Prevent the form from submitting the traditional way
+
+          var formData = new FormData();
+          var fileInput = document.getElementById("file");
+          formData.append("file", fileInput.files[0]);
+
+          fetch("/predict-file", {
+            method: "POST",
+            body: formData,
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              // console.log(data.columns.forEach(e => e))
+              data.columns.forEach((e) => console.log(e));
+              var responseDiv = document.getElementById("response");
+              responseDiv.innerHTML = "";
+
+              if (data.error) {
+                responseDiv.innerHTML = `<p>Error: ${data.error}</p>`;
+              } else {
+                responseDiv.innerHTML = "<h2>File Uploaded Successfully</h2>";
+                responseDiv.innerHTML += "<h3>Columns:</h3>";
+                responseDiv.innerHTML += "<ul>";
+                data.columns.forEach((column) => {
+                  responseDiv.innerHTML += `<li>${column}</li>`;
+                });
+                responseDiv.innerHTML += "</ul>";
+
+                responseDiv.innerHTML += "<h3>Sample Data:</h3>";
+                responseDiv.innerHTML += "<ul>";
+                data.example_data.forEach((row) => {
+                  responseDiv.innerHTML +=
+                    "<li>" + JSON.stringify(row) + "</li>";
+                });
+                responseDiv.innerHTML += "</ul>";
+              }
+            })
+            .catch((error) => {
+              document.getElementById(
+                "response"
+              ).innerHTML = `<p>Error: ${error}</p>`;
+            });
+        });
+    </script>
+  </body>
+</html>

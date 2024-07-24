@@ -1,2 +1,2 @@
-- Vinna Alfiati
-- Tegar Levta Anggana
+- Vinna Alfiati (https://github.com/tegar-anggana/a-backend)
+- Tegar Levta Anggana (https://github.com/tegar-anggana/skripsi-deployment)

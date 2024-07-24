@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ulasan Aplikasi Mobile JKN</title>
+    <style>
+      h1,
+      h2 {
+        font-weight: 400;
+      }
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        text-align: center;
+        margin-top: 50px;
+      }
+      button,
+      input {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        font-weight: bold;
+      }
+
+      a {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      #result {
+        margin-top: 20px;
+      }
+      .upload-box {
+        width: fit-content;
+        margin: 10px auto;
+        padding: 10px;
+        border-radius: 5px;
+        background: rgba(255, 255, 255, 0.9); /* Semi-transparent background */
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      input#file {
+        border: 1px solid black;
+        padding: 6px;
+      }
+      .button-submit-upload,
+      .download-button {
+        margin-top: 10px;
+        font-size: 16px;
+        padding: 7px 20px;
+        background-color: #0072ff;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+      }
+      .button-submit-upload:hover,
+      .download-button:hover {
+        background-color: #005bb5;
+        transform: scale(1.05);
+      }
+      .button-submit-upload:active,
+      .download-button:active {
+        background-color: #004494;
+        transform: scale(1);
+      }
+      #loading {
+        display: none;
+        font-size: 18px;
+        color: #0072ff;
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Analisis Sentimen Ulasan Aplikasi Mobile JKN</h1>
+
+    <div class="upload-container">
+      <div style="margin-top: 30px;">
+        <a href="/download-contoh">Unduh contoh format file excel</a>
+      </div>
+      <form id="predictFile">
+        <div class="upload-box">
+          <label for="file">Unggah File Excel (.xlsx):</label>
+          <input type="file" id="file" name="file" accept=".xlsx" required />
+        </div>
+        <div>
+          <button class="button-submit-upload" type="submit">
+            Unggah
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <div id="loading">Mohon tunggu...</div>
+    <h2 id="hasil" style="margin-top: 40px;"></h2>
+    <div id="response"></div>
+    <div>
+      <button
+        id="download-button"
+        class="download-button"
+        style="display: none"
+      >
+        Unduh
+      </button>
+    </div>
+
+    <script>
+      document
+        .getElementById("predictFile")
+        .addEventListener("submit", async function (event) {
+          event.preventDefault(); // Prevent the form from submitting the traditional way
+
+          const formData = new FormData();
+          const fileInput = document.getElementById("file");
+          formData.append("file", fileInput.files[0]);
+
+          // Show loading indicator
+          document.getElementById("loading").style.display = "block";
+
+          try {
+            const response = await fetch("/predict-file", {
+              method: "POST",
+              body: formData,
+            });
+
+            if (response.ok) {
+              const blob = await response.blob();
+              const url = window.URL.createObjectURL(blob);
+
+              // Store the URL in the download button
+              const downloadButton = document.getElementById("download-button");
+              downloadButton.style.display = "inline"; // Show the download button
+              downloadButton.onclick = function () {
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = "result.xlsx";
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                window.URL.revokeObjectURL(url);
+              };
+
+              document.getElementById("hasil").innerHTML = "Hasil";
+              document.getElementById("response").innerHTML =
+                "<p>Proses analisis sentimen telah selesai. Kolom sentimen berhasil ditambahkan.</p> <p>Silakan unduh file melalui tombol di bawah ini.</p>";
+            } else {
+              const error = await response.json();
+              document.getElementById(
+                "response"
+              ).innerHTML = `<p>Error: ${error.error}</p>`;
+            }
+          } catch (e) {
+            document.getElementById(
+              "response"
+            ).innerHTML = `<p>Error: ${e.message}</p>`;
+          } finally {
+            // Hide loading indicator
+            document.getElementById("loading").style.display = "none";
+          }
+
+          // fetch("/predict-file", {
+          //   method: "POST",
+          //   body: formData,
+          // })
+          //   .then((response) => response.json())
+          //   .then((data) => {
+          //     var responseDiv = document.getElementById("response");
+          //     responseDiv.innerHTML = "";
+
+          //     if (data.error) {
+          //       responseDiv.innerHTML = `<p>Error: ${data.error}</p>`;
+          //     } else {
+          //       responseDiv.innerHTML = "<h2>File Uploaded Successfully</h2>";
+          //       responseDiv.innerHTML += "<h3>Columns:</h3>";
+          //       responseDiv.innerHTML += "<ul>";
+          //       data.columns.forEach((column) => {
+          //         responseDiv.innerHTML += `<li>${column}</li>`;
+          //       });
+          //       responseDiv.innerHTML += "</ul>";
+
+          //       responseDiv.innerHTML += "<h3>Sample Data:</h3>";
+          //       responseDiv.innerHTML += "<ul>";
+          //       data.example_data.forEach((row) => {
+          //         responseDiv.innerHTML +=
+          //           "<li>" + JSON.stringify(row) + "</li>";
+          //       });
+          //       responseDiv.innerHTML += "</ul>";
+          //     }
+          //   })
+          //   .catch((error) => {
+          //     document.getElementById(
+          //       "response"
+          //     ).innerHTML = `<p>Error: ${error}</p>`;
+          //   })
+          //   .finally(() => {
+          //     // Hide loading indicator
+          //     document.getElementById("loading").style.display = "none";
+          //   });
+        });
+    </script>
+  </body>
+</html>

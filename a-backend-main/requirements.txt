@@ -1,0 +1,9 @@
+Flask==2.2.5
+Flask-Cors==3.0.10
+pydub==0.25.1
+huggingsound==0.1.6
+transformers==4.41.2
+torch==1.12.1
+scikit-learn==1.2.2
+jiwer==2.6.0
+numpy==1.25.2

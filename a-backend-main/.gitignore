@@ -1,0 +1,5 @@
+ffmpeg
+venv
+*.wav
+*.zip
+*.7z

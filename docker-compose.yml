@@ -1,0 +1,16 @@
+version: "3.8"
+
+services:
+  a-backend:
+    build:
+      context: ./a-backend-main
+    container_name: a-backend-container
+    ports:
+      - "8080:8080"
+
+  skripsi-deployment:
+    build:
+      context: ./skripsi-deployment-main
+    container_name: skripsi-deployment-container
+    ports:
+      - "8081:8081"
