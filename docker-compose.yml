@@ -3,18 +3,14 @@
 services:
   a-backend:
     build:
-      context: .
-      dockerfile: Dockerfile
-      target: a-dependencies
+      context: ./a-backend-main
     container_name: a-backend-container
     ports:
       - "8881:5000"
 
   skripsi-deployment:
     build:
-      context: .
-      dockerfile: Dockerfile
-      target: b-dependencies
+      context: ./skripsi-deployment-main
     container_name: skripsi-deployment-container
     ports:
       - "8882:5000"
